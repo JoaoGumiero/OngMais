@@ -11,20 +11,30 @@ import (
 )
 
 func main() {
-	firebase.InitFirebase()
-	defer firebase.Client.Close()
+	client := firebase.InitFirebase()
+	println(client)
+	defer func() {
+		if client != nil {
+			println("diff than")
+			client.Close()
+		}
+	}()
+
+	if client == nil {
+		log.Fatalf("Firestore client is not initialized")
+	}
 
 	states, err := services.FetchStates()
 	if err != nil {
 		log.Fatalf("Error fetching states: %v", err)
 	}
-	firebase.StoreStates(states)
+	firebase.StoreStates(states, client)
 
 	cities, err := services.FetchCities()
 	if err != nil {
 		log.Fatalf("Error fetching cities: %v", err)
 	}
-	firebase.StoreCities(cities)
+	firebase.StoreCities(cities, client)
 
 	router := mux.NewRouter()
 	apis.RegisterRoutes(router) // Register the routes defined in routes.go

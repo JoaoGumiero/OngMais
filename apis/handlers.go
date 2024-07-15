@@ -10,6 +10,7 @@ import (
 	"github.com/JoaoGumiero/OngMais/firebase"
 	"github.com/JoaoGumiero/OngMais/utils" // Adjust the import path as necessary
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -39,7 +40,11 @@ func CreateVoluntary(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to add voluntary: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	voluntary.ID = docRef.ID // Optionally update the ID with the Firestore generated ID
+	voluntary.ID, err = uuid.Parse(docRef.ID) // Optionally update the ID with the Firestore generated ID
+	if err != nil {
+		http.Error(w, "Failed parse str to uuid: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(voluntary)
 	w.WriteHeader(http.StatusCreated)
 }
@@ -112,14 +117,14 @@ func DeleteVoluntary(w http.ResponseWriter, r *http.Request) {
 // Get all Brazilian States
 func getStates(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	iter := client.Collection("states").Documents(ctx)
-	var states []entities.State
+	iter := client.Collection("br-states").Documents(ctx)
+	var states []entities.SimplifiedState
 	for {
 		doc, err := iter.Next()
 		if err != nil {
 			break
 		}
-		var state entities.State
+		var state entities.SimplifiedState
 		doc.DataTo(&state)
 		states = append(states, state)
 	}
@@ -129,14 +134,14 @@ func getStates(w http.ResponseWriter, r *http.Request) {
 // Get all Brazilian Cities
 func getCities(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	iter := client.Collection("cities").Documents(ctx)
-	var cities []entities.City
+	iter := client.Collection("br-cities").Documents(ctx)
+	var cities []entities.SimplifiedCity
 	for {
 		doc, err := iter.Next()
 		if err != nil {
 			break
 		}
-		var city entities.City
+		var city entities.SimplifiedCity
 		doc.DataTo(&city)
 		cities = append(cities, city)
 	}

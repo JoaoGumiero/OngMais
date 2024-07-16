@@ -9,6 +9,7 @@ import (
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
 	"github.com/JoaoGumiero/OngMais/entities"
+	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 )
 
@@ -22,10 +23,15 @@ func InitFirebase() *firestore.Client {
 	once.Do(func() {
 		ctx := context.Background()
 
+		// Load env variables wiith the godo lib
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
 		// Check if credential it's not empty
-		credentialsPath := os.Getenv("FIREBASE_CREDENTIALS_PATH")
+		credentialsPath := os.Getenv("FIREBASE_CREDENTIALS")
 		if credentialsPath == "" {
-			log.Fatalf("FIREBASE_CREDENTIALS_PATH environment variable is not set")
+			log.Fatalf("FIREBASE_CREDENTIALS environment variable is not set")
 		}
 
 		// Caminho (tenho que arrumar) para o arquivo JSON que contém sua chave de serviço

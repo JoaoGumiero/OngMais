@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+
+	// Initialize Firebase
 	client := firebase.InitFirebase()
 	println(client)
 	defer func() {

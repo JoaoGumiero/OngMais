@@ -7,7 +7,6 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/JoaoGumiero/OngMais/entities"
-	"github.com/JoaoGumiero/OngMais/firebase"
 	"github.com/JoaoGumiero/OngMais/utils" // Adjust the import path as necessary
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -16,8 +15,8 @@ import (
 
 var client *firestore.Client
 
-func init() {
-	client = firebase.InitFirebase()
+func RecieveFirebaseClient(Fclient *firestore.Client) {
+	client = Fclient
 }
 
 var validate = validator.New()

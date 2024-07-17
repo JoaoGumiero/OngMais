@@ -5,38 +5,49 @@ import (
 	"net/http"
 
 	"github.com/JoaoGumiero/OngMais/apis"
+	"github.com/JoaoGumiero/OngMais/config"
 	"github.com/JoaoGumiero/OngMais/firebase"
 	"github.com/JoaoGumiero/OngMais/services"
 	"github.com/gorilla/mux"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
 
+	Configs, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Error loading enviroments: %v", err)
+	}
+
 	// Initialize Firebase
-	client := firebase.InitFirebase()
-	println(client)
+	Client := firebase.InitFirebase(*Configs)
+
+	println(Client)
 	defer func() {
-		if client != nil {
+		if Client != nil {
 			println("diff than")
-			client.Close()
+			Client.Close()
 		}
 	}()
 
-	if client == nil {
-		log.Fatalf("Firestore client is not initialized")
+	if Client == nil {
+		log.Fatalf("Firestore Client is not initialized")
 	}
+
+	//Sending the cliente to handlers
+	apis.RecieveFirebaseClient(Client)
 
 	states, err := services.FetchStates()
 	if err != nil {
 		log.Fatalf("Error fetching states: %v", err)
 	}
-	firebase.StoreStates(states, client)
+	firebase.StoreStates(states, Client)
 
 	cities, err := services.FetchCities()
 	if err != nil {
 		log.Fatalf("Error fetching cities: %v", err)
 	}
-	firebase.StoreCities(cities, client)
+	firebase.StoreCities(cities, Client)
 
 	router := mux.NewRouter()
 	apis.RegisterRoutes(router) // Register the routes defined in routes.go

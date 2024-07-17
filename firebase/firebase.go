@@ -2,12 +2,13 @@ package firebase
 
 import (
 	"context"
+	"encoding/json"
 	"log"
-	"os"
 	"sync"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
+	"github.com/JoaoGumiero/OngMais/config"
 	"github.com/JoaoGumiero/OngMais/entities"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
@@ -19,7 +20,7 @@ var (
 )
 
 // InitFirebase inicializa e retorna o cliente Firestore.
-func InitFirebase() *firestore.Client {
+func InitFirebase(cnf config.Config) *firestore.Client {
 	once.Do(func() {
 		ctx := context.Background()
 
@@ -28,17 +29,25 @@ func InitFirebase() *firestore.Client {
 		if err != nil {
 			log.Fatalf("Error loading .env file: %v", err)
 		}
+
 		// Check if credential it's not empty
-		credentialsPath := os.Getenv("FIREBASE_CREDENTIALS")
-		if credentialsPath == "" {
-			log.Fatalf("FIREBASE_CREDENTIALS environment variable is not set")
+		// credentialsPath := os.Getenv("FIREBASE_CREDENTIALS")
+		// if credentialsPath == "" {
+		//	log.Fatalf("FIREBASE_CREDENTIALS environment variable is not set")
+		// }
+
+		// Converting the credetials to JSON in order to satisfy the FirebaseCredentials call.
+		cnfJson, err := json.Marshal(cnf.Firebase)
+		if err != nil {
+			log.Fatalf("Error converting the config credentials to JSON: %v", err)
 		}
 
-		// Caminho (tenho que arrumar) para o arquivo JSON que contém sua chave de serviço
-		sa := option.WithCredentialsFile(credentialsPath)
+		// FirebaseCredential call that return a clientOption
+		sa := option.WithCredentialsJSON(cnfJson)
 
 		// Project ID from the environment variable
-		projectID := os.Getenv("FIREBASE_PROJECT_ID")
+		// projectID := os.Getenv("FIREBASE_PROJECT_ID")
+		projectID := cnf.FirebaseProjectID
 		if projectID == "" {
 			log.Fatalf("error getting Firestore client: project id is required to access Firestore")
 		}

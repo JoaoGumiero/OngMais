@@ -10,7 +10,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/JoaoGumiero/OngMais/config"
 	"github.com/JoaoGumiero/OngMais/entities"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"google.golang.org/api/option"
 )
 
@@ -25,10 +25,10 @@ func InitFirebase(cnf config.Config) *firestore.Client {
 		ctx := context.Background()
 
 		// Load env variables wiith the godo lib
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalf("Error loading .env file: %v", err)
-		}
+		// err := godotenv.Load()
+		// if err != nil {
+		// 	log.Fatalf("Error loading .env file: %v", err)
+		//}
 
 		// Check if credential it's not empty
 		// credentialsPath := os.Getenv("FIREBASE_CREDENTIALS")

@@ -3,12 +3,11 @@ package entities
 import "github.com/google/uuid"
 
 type Voluntary struct {
-	ID    uuid.UUID       `json:"id" validate:"omitempty,uuid4" firestore:"ID"`
-	Name  string          `json:"name" validate:"required" firestore:"Name"`
-	Email string          `json:"email" validate:"required,email" firestore:"Email"`
-	Phone int             `json:"phone" validate:"required,phone_br" firestore:"Phone"`
-	State SimplifiedState `json:"state" validate:"required" firestore:"State"`
-	City  SimplifiedCity  `json:"city" validate:"required" firestore:"City"`
+	ID    uuid.UUID      `json:"id" validate:"omitempty,uuid4" firestore:"ID"`
+	Name  string         `json:"name" validate:"required" firestore:"Name"`
+	Email string         `json:"email" validate:"required,email" firestore:"Email"`
+	Phone int            `json:"phone" validate:"required,phone_br" firestore:"Phone"`
+	City  SimplifiedCity `json:"city" validate:"required" firestore:"City"`
 }
 
 type SimplifiedState struct {

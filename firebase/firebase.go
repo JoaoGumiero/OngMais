@@ -11,6 +11,7 @@ import (
 	"github.com/JoaoGumiero/OngMais/config"
 	"github.com/JoaoGumiero/OngMais/entities"
 	_ "github.com/joho/godotenv/autoload"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -75,6 +76,31 @@ func StoreStates(states []entities.SimplifiedState, c *firestore.Client) {
 	}
 	ctx := context.Background()
 	for _, state := range states {
+		// Check if there's states with the same name.
+		query := c.Collection("br-states").Where("Name", "==", state.Name).Documents(ctx)
+		exists := false
+
+		// Iterate through the DB
+		for {
+			doc, err := query.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error checking existing states: %v", err)
+			}
+			if doc.Exists() {
+				exists = true
+				break
+			}
+		}
+
+		// If the state already exists, skip the adding
+		if exists {
+			log.Printf("State %s already exists. Skipping addition of it.", state.Name)
+			continue
+		}
+
 		_, _, err := c.Collection("br-states").Add(ctx, state)
 		if err != nil {
 			log.Fatalf("Failed adding state: %v", err)
@@ -88,6 +114,31 @@ func StoreCities(cities []entities.SimplifiedCity, c *firestore.Client) {
 	}
 	ctx := context.Background()
 	for _, city := range cities {
+
+		query := c.Collection("br-cities").Where("Name", "==", city.Name).Documents(ctx)
+		exists := false
+
+		// Iterate through the DB
+		for {
+			doc, err := query.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error checking existing states: %v", err)
+			}
+			if doc.Exists() {
+				exists = true
+				break
+			}
+		}
+
+		// If the city already exists, skip the addng.
+		if exists {
+			log.Printf("City %s already exists. Skipping addition of it.", city.Name)
+			continue
+		}
+
 		_, _, err := c.Collection("br-cities").Add(ctx, city)
 		if err != nil {
 			log.Fatalf("Failed adding city: %v", err)

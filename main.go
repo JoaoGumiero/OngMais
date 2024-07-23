@@ -37,6 +37,7 @@ func main() {
 	//Sending the cliente to handlers
 	apis.RecieveFirebaseClient(Client)
 
+	// Criar API
 	states, err := services.FetchStates()
 	if err != nil {
 		log.Fatalf("Error fetching states: %v", err)

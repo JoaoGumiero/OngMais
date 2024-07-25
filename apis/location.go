@@ -1,7 +1,6 @@
 package apis
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -18,7 +17,7 @@ func NewLocationHandler(LocationService *services.LocationService) *LocationHand
 
 // Get all Brazilian States
 func (h *LocationHandler) getStates(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
+	ctx := r.Context()
 	states, err := h.LocationService.GetStatesService(ctx)
 	if err != nil {
 		http.Error(w, "Falied to get all States: "+err.Error(), http.StatusBadRequest)
@@ -28,7 +27,7 @@ func (h *LocationHandler) getStates(w http.ResponseWriter, r *http.Request) {
 
 // Get all Brazilian Cities
 func (h *LocationHandler) getCities(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
+	ctx := r.Context()
 	cities, err := h.LocationService.GetCitiesService(ctx)
 	if err != nil {
 		http.Error(w, "Falied to get all Cities: "+err.Error(), http.StatusBadRequest)

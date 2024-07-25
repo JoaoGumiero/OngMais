@@ -35,20 +35,9 @@ func main() {
 	}
 
 	//Sending the cliente to handlers
-	apis.RecieveFirebaseClient(Client)
+	//apis.RecieveFirebaseClient(Client)
 
-	// Criar API
-	states, err := services.FetchStates()
-	if err != nil {
-		log.Fatalf("Error fetching states: %v", err)
-	}
-	firebase.StoreStates(states, Client)
-
-	cities, err := services.FetchCities()
-	if err != nil {
-		log.Fatalf("Error fetching cities: %v", err)
-	}
-	firebase.StoreCities(cities, Client)
+	services.CronStateCityFetch(Configs)
 
 	router := mux.NewRouter()
 	apis.RegisterRoutes(router) // Register the routes defined in routes.go

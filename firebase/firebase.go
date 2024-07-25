@@ -70,11 +70,10 @@ func InitFirebase(cnf config.Config) *firestore.Client {
 	return Client
 }
 
-func StoreStates(states []entities.SimplifiedState, c *firestore.Client) {
+func StoreStates(states []entities.SimplifiedState, c *firestore.Client, ctx context.Context) {
 	if c == nil {
 		log.Fatalf("Store States: Firestore client is not initialized")
 	}
-	ctx := context.Background()
 	for _, state := range states {
 		// Check if there's states with the same name.
 		query := c.Collection("br-states").Where("Name", "==", state.Name).Documents(ctx)
@@ -108,11 +107,10 @@ func StoreStates(states []entities.SimplifiedState, c *firestore.Client) {
 	}
 }
 
-func StoreCities(cities []entities.SimplifiedCity, c *firestore.Client) {
+func StoreCities(cities []entities.SimplifiedCity, c *firestore.Client, ctx context.Context) {
 	if c == nil {
 		log.Fatalf("Store Cities: Firestore client is not initialized")
 	}
-	ctx := context.Background()
 	for _, city := range cities {
 
 		query := c.Collection("br-cities").Where("Name", "==", city.Name).Documents(ctx)

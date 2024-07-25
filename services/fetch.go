@@ -1,12 +1,52 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"time"
 
+	"github.com/JoaoGumiero/OngMais/config"
 	"github.com/JoaoGumiero/OngMais/entities"
+	"github.com/JoaoGumiero/OngMais/firebase"
+	"github.com/JoaoGumiero/OngMais/utils"
 )
+
+// Cron to periodically fetch data from API
+func CronStateCityFetch(conf *config.Config) error {
+	// Once every 6 months
+	rt := utils.NewRealTicker(6 * 30 * 24 * time.Hour)
+	defer rt.Stop()
+
+	// New context to manually define a timeout period
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	Client := firebase.InitFirebase(*conf)
+	for {
+		select {
+		case <-rt.C():
+			fmt.Println("City/State fetch timer called")
+			states, err := FetchStates()
+			if err != nil {
+				log.Fatalf("Error fetching states: %v", err)
+			}
+			firebase.StoreStates(states, Client, ctx)
+
+			cities, err := FetchCities()
+			if err != nil {
+				log.Fatalf("Error fetching cities: %v", err)
+			}
+			firebase.StoreCities(cities, Client, ctx)
+		case <-ctx.Done():
+			rt.Stop()
+			return nil
+		}
+	}
+}
 
 func FetchStates() ([]entities.SimplifiedState, error) {
 	url := "https://servicodados.ibge.gov.br/api/v1/localidades/estados"

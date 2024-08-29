@@ -6,23 +6,27 @@ import (
 	"github.com/JoaoGumiero/OngMais/entities"
 	"github.com/JoaoGumiero/OngMais/firebase"
 	"github.com/JoaoGumiero/OngMais/utils"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type VoluntaryService struct {
 	VoluntaryRepository *firebase.VoluntaryRepository
+	validate            *validator.Validate
 }
 
 func NewVoluntaryService(VoluntaryRepo *firebase.VoluntaryRepository) *VoluntaryService {
-	return &VoluntaryService{VoluntaryRepository: VoluntaryRepo}
+	return &VoluntaryService{
+		VoluntaryRepository: VoluntaryRepo,
+		validate:            utils.GlobalValidator,
+	}
 }
 
 // instance validator
-var validate = validator.New()
+// var validate = validator.New()
 
 func (s *VoluntaryService) AddVoluntaryService(voluntary *entities.Voluntary, ctx context.Context) error {
 	// Make some validations here
-	if err := validate.Struct(voluntary); err != nil {
+	if err := s.validate.Struct(voluntary); err != nil {
 		return err
 	}
 	// Include here validation of Email and Phone

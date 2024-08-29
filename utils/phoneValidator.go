@@ -6,9 +6,11 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var GlobalValidator *validator.Validate
+
 func init() {
-	validate := validator.New()
-	validate.RegisterValidation("phone_br", validateBRPhone)
+	GlobalValidator = validator.New()
+	GlobalValidator.RegisterValidation("phone_br", validateBRPhone)
 }
 
 func validateBRPhone(fl validator.FieldLevel) bool {

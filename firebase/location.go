@@ -12,7 +12,7 @@ type LocationRepository struct {
 	client *firestore.Client
 }
 
-func NewLocationrRepository(client *firestore.Client) *LocationRepository {
+func NewLocationRepository(client *firestore.Client) *LocationRepository {
 	return &LocationRepository{client: client}
 }
 

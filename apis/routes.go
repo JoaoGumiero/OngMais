@@ -1,14 +1,15 @@
 package apis
 
 import (
+	"github.com/JoaoGumiero/OngMais/firebase"
 	"github.com/JoaoGumiero/OngMais/services"
 	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(router *mux.Router) {
+func RegisterRoutes(router *mux.Router, vRepo *firebase.VoluntaryRepository, lRepo *firebase.LocationRepository) {
 	// Initialize Services
-	voluntaryService := &services.VoluntaryService{}
-	locationService := &services.LocationService{}
+	voluntaryService := services.NewVoluntaryService(vRepo)
+	locationService := services.NewLocationService(lRepo)
 	// Initialize handlers
 	voluntaryHandler := NewVoluntaryHandler(voluntaryService)
 	locationHandler := NewLocationHandler(locationService)

@@ -11,7 +11,7 @@ type VoluntaryRepository struct {
 	client *firestore.Client
 }
 
-func NewUserRepository(client *firestore.Client) *VoluntaryRepository {
+func NewVoluntaryRepository(client *firestore.Client) *VoluntaryRepository {
 	return &VoluntaryRepository{client: client}
 }
 
